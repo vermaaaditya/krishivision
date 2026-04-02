@@ -1,6 +1,6 @@
 from __future__ import annotations
-
 import os
+import uuid
 import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -15,14 +15,17 @@ logger = logging.getLogger(__name__)
 
 def create_app() -> Flask:
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, origins=os.getenv("CORS_ORIGINS", "http://localhost:5173"))
 
     model_service = ModelService()
     firebase_service = FirebaseService()
 
     @app.get("/api/health")
     def health():
-        return jsonify({"status": "ok"}), 200
+        return jsonify({
+            "status": "ok",
+            "firebase": firebase_service.enabled,
+        }), 200
 
     @app.post("/api/predict")
     def predict():
@@ -32,43 +35,61 @@ def create_app() -> Flask:
         file = request.files["image"]
         filename = secure_filename((file.filename or "").strip())
         if not filename:
-            return jsonify({"error": "Image file name is required"}), 400
+            return jsonify({"error": "Image filename is required"}), 400
 
-        extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-        if extension not in ALLOWED_EXTENSIONS:
+        ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        if ext not in ALLOWED_EXTENSIONS:
             return jsonify({"error": "Unsupported file type. Use PNG or JPG."}), 400
 
         image_bytes = file.read()
         if not image_bytes:
             return jsonify({"error": "Uploaded file is empty"}), 400
 
-        prediction = model_service.predict(image_bytes=image_bytes, filename=filename)
+        # Run ML prediction
+        try:
+            prediction = model_service.predict(
+                image_bytes=image_bytes, filename=filename
+            )
+        except NotImplementedError:
+            return jsonify({"error": "Model not ready — ML engineer needs to update classifier.py"}), 503
+        except Exception as e:
+            logger.exception("Model prediction failed")
+            return jsonify({"error": str(e)}), 500
+
+        prediction_id = str(uuid.uuid4())
+
+        # Upload image to Storage
+        image_url = firebase_service.upload_image(
+            image_bytes=image_bytes,
+            filename=filename,
+            content_type=file.content_type or "image/jpeg",
+            prediction_id=prediction_id,
+        )
+
+        # Save to Firestore
         persisted = firebase_service.save_prediction(
+            prediction_id=prediction_id,
             filename=filename,
             content_type=file.content_type or "",
             size_bytes=len(image_bytes),
+            image_url=image_url,
             prediction=prediction,
         )
+
         if firebase_service.enabled and not persisted:
-            logger.warning("Prediction generated but Firebase persistence failed")
-        return jsonify(prediction), 200
+            logger.warning("Prediction generated but Firestore persistence failed")
 
-    @app.post("/api/predict_tabular")
-    def predict_tabular():
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "Missing JSON body"}), 400
-        
-        # We can add explicit validation here or rely on the model dropping it.
-        # But for robustness, let's just pass data directly to model.
-        try:
-            prediction = model_service.predict_tabular(features=data)
-        except Exception as e:
-            logger.exception("Model prediction failed")
-            return jsonify({"error": str(e)}), 400
+        return jsonify({
+            **prediction,
+            "id": prediction_id,
+            "image_url": image_url,
+        }), 200
 
-        # We can try to persist it if useful, but we skip firebase for simplicity.
-        return jsonify(prediction), 200
+    @app.get("/api/predictions")
+    def get_predictions():
+        limit = min(int(request.args.get("limit", 20)), 100)
+        predictions = firebase_service.get_predictions(limit=limit)
+        return jsonify(predictions), 200
 
     return app
 
