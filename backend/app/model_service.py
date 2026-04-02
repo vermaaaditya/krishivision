@@ -18,9 +18,12 @@ class ModelService:
 
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
-        if not hasattr(module, "predict"):
-            raise RuntimeError("Classifier module must expose a 'predict' function")
-        return module.predict
+        if not hasattr(module, "predict_tabular"):
+            raise RuntimeError("Classifier module must expose a 'predict_tabular' function")
+        return module.predict_tabular
+
+    def predict_tabular(self, features: Dict[str, Any]) -> Dict[str, Any]:
+        return self._predictor(features=features)
 
     def predict(self, *, image_bytes: bytes, filename: str) -> Dict[str, Any]:
-        return self._predictor(image_bytes=image_bytes, filename=filename)
+        raise NotImplementedError("Image prediction is replaced by predict_tabular")

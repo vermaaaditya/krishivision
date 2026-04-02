@@ -25,3 +25,29 @@ export async function predictCropDisease(file) {
 
   return data;
 }
+
+export async function predictTabularCropDisease(features) {
+  const response = await fetch(`${API_BASE_URL}/api/predict_tabular`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(features),
+  });
+
+  let data = {};
+  const rawBody = await response.text();
+  if (rawBody) {
+    try {
+      data = JSON.parse(rawBody);
+    } catch (error) {
+      console.error('Failed to parse prediction response as JSON', error);
+    }
+  }
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Prediction request failed');
+  }
+
+  return data;
+}

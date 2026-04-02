@@ -53,6 +53,23 @@ def create_app() -> Flask:
             logger.warning("Prediction generated but Firebase persistence failed")
         return jsonify(prediction), 200
 
+    @app.post("/api/predict_tabular")
+    def predict_tabular():
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Missing JSON body"}), 400
+        
+        # We can add explicit validation here or rely on the model dropping it.
+        # But for robustness, let's just pass data directly to model.
+        try:
+            prediction = model_service.predict_tabular(features=data)
+        except Exception as e:
+            logger.exception("Model prediction failed")
+            return jsonify({"error": str(e)}), 400
+
+        # We can try to persist it if useful, but we skip firebase for simplicity.
+        return jsonify(prediction), 200
+
     return app
 
 

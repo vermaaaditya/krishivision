@@ -1,28 +1,51 @@
 from __future__ import annotations
 
 import os
-from typing import Dict
+import joblib
+import pandas as pd
+from typing import Dict, Any
 
-MODEL_NAME = os.getenv("MODEL_NAME", "baseline-crop-classifier")
-MODEL_PATH = os.getenv("MODEL_PATH", "ml-model/artifacts/model.bin")
+MODEL_NAME = os.getenv("MODEL_NAME", "tabular-crop-classifier")
 
+# We want the path to ml-model/artifacts/tabular_model.joblib
+_current_dir = os.path.dirname(__file__)
+MODEL_PATH = os.path.join(_current_dir, "artifacts", "tabular_model.joblib")
 
-def predict(*, image_bytes: bytes, filename: str) -> Dict[str, object]:
-    if not image_bytes:
-        raise ValueError("image_bytes must not be empty")
+_model = None
 
-    disease_index = (sum(image_bytes) + len(filename)) % 3
-    disease_map = {
-        0: ("Healthy", 0.93, "No immediate action required. Continue routine monitoring."),
-        1: ("Leaf Spot", 0.86, "Isolate affected plants and apply recommended fungicide."),
-        2: ("Rust", 0.82, "Remove infected leaves and improve field airflow."),
+def get_model():
+    global _model
+    if _model is None:
+        if os.path.exists(MODEL_PATH):
+            _model = joblib.load(MODEL_PATH)
+        else:
+            raise RuntimeError(f"Model not found at {MODEL_PATH}")
+    return _model
+
+def predict_tabular(features: Dict[str, Any]) -> Dict[str, object]:
+    model = get_model()
+    df = pd.DataFrame([features])
+    prediction = model.predict(df)[0]
+    
+    probabilities = {cls: prob for cls, prob in zip(model.classes_, model.predict_proba(df)[0])}
+    max_prob = max(probabilities.values())
+    
+    recommendations = {
+        "None": "No immediate action required. Continue routine monitoring.",
+        "Mild": "Isolate affected plants and monitor closely.",
+        "Moderate": "Apply targeted fungicide/treatment to affected areas.",
+        "Severe": "Immediate action needed. Remove infected plants and treat entire field."
     }
-    disease, confidence, recommendation = disease_map[disease_index]
-
+    
     return {
         "model": MODEL_NAME,
         "model_path": MODEL_PATH,
-        "disease": disease,
-        "confidence": confidence,
-        "recommendation": recommendation,
+        "disease": prediction,
+        "confidence": float(max_prob),
+        "recommendation": recommendations.get(prediction, "Consult an agricultural expert."),
+        "probabilities": {k: float(v) for k, v in probabilities.items()}
     }
+
+def predict(*, image_bytes: bytes, filename: str) -> Dict[str, object]:
+    # Legacy wrapper if any old test still wants to call it.
+    raise NotImplementedError("Image prediction is replaced by predict_tabular.")
