@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import logging
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -9,6 +10,7 @@ from .firebase_service import FirebaseService
 from .model_service import ModelService
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+logger = logging.getLogger(__name__)
 
 
 def create_app() -> Flask:
@@ -41,12 +43,14 @@ def create_app() -> Flask:
             return jsonify({"error": "Uploaded file is empty"}), 400
 
         prediction = model_service.predict(image_bytes=image_bytes, filename=filename)
-        firebase_service.save_prediction(
+        persisted = firebase_service.save_prediction(
             filename=filename,
             content_type=file.content_type or "",
             size_bytes=len(image_bytes),
             prediction=prediction,
         )
+        if firebase_service.enabled and not persisted:
+            logger.warning("Prediction generated but Firebase persistence failed")
         return jsonify(prediction), 200
 
     return app
