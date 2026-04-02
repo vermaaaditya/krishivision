@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom'
 import Sidebar from './Sidebar'
 
 const mobileNavItems = [
-  { to: '/', icon: 'home', label: 'Home', exact: true },
+  { to: '/dashboard', icon: 'home', label: 'Home', exact: true },
   { to: '/scan', icon: 'photo_camera', label: 'Scan' },
   { to: '/history', icon: 'cloud_done', label: 'History' },
   { to: '/settings', icon: 'person', label: 'Profile' },

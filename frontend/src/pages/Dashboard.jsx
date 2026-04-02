@@ -40,7 +40,7 @@ export default function Dashboard() {
   return (
     <div className="p-6 md:p-12 pb-32 md:pb-12 bg-surface min-h-screen">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div>
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-on-surface" style={{ fontFamily: 'Manrope, sans-serif' }}>
             Welcome Back
