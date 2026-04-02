@@ -11,13 +11,13 @@ def predict(*, image_bytes: bytes, filename: str) -> Dict[str, object]:
     if not image_bytes:
         raise ValueError("image_bytes must not be empty")
 
-    score_seed = (sum(image_bytes) + len(filename)) % 3
+    disease_index = (sum(image_bytes) + len(filename)) % 3
     disease_map = {
         0: ("Healthy", 0.93, "No immediate action required. Continue routine monitoring."),
         1: ("Leaf Spot", 0.86, "Isolate affected plants and apply recommended fungicide."),
         2: ("Rust", 0.82, "Remove infected leaves and improve field airflow."),
     }
-    disease, confidence, recommendation = disease_map[score_seed]
+    disease, confidence, recommendation = disease_map[disease_index]
 
     return {
         "model": MODEL_NAME,

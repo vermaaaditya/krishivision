@@ -9,7 +9,15 @@ export async function predictCropDisease(file) {
     body: formData,
   });
 
-  const data = await response.json().catch(() => ({}));
+  let data = {};
+  const rawBody = await response.text();
+  if (rawBody) {
+    try {
+      data = JSON.parse(rawBody);
+    } catch (error) {
+      console.error('Failed to parse prediction response as JSON', error);
+    }
+  }
 
   if (!response.ok) {
     throw new Error(data.error || 'Prediction request failed');

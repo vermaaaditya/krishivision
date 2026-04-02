@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
 from .model_service import ModelService
 
@@ -25,7 +26,7 @@ def create_app() -> Flask:
             return jsonify({"error": "Missing 'image' file"}), 400
 
         file = request.files["image"]
-        filename = (file.filename or "").strip()
+        filename = secure_filename((file.filename or "").strip())
         if not filename:
             return jsonify({"error": "Image file name is required"}), 400
 

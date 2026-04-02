@@ -51,14 +51,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-.preview {
-  width: 100%;
-  max-height: 320px;
-  object-fit: cover;
-  border-radius: 12px;
-  margin-top: 0.75rem;
-}
-
 .empty {
   margin-top: 0.75rem;
   color: #647367;

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 MODULE_PATH = Path(__file__).resolve().parents[2] / "ml-model" / "classifier.py"
 
@@ -11,7 +11,7 @@ class ModelService:
     def __init__(self) -> None:
         self._predictor = self._load_predictor()
 
-    def _load_predictor(self):
+    def _load_predictor(self) -> Callable[..., Dict[str, Any]]:
         spec = importlib.util.spec_from_file_location("crop_classifier", MODULE_PATH)
         if spec is None or spec.loader is None:
             raise RuntimeError(f"Unable to load classifier module at {MODULE_PATH}")

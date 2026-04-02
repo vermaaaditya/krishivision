@@ -4,7 +4,6 @@ import './App.css'
 
 function App() {
   const [file, setFile] = useState(null)
-  const [previewUrl, setPreviewUrl] = useState('')
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -18,12 +17,16 @@ function App() {
 
     if (!selected) {
       setFile(null)
-      setPreviewUrl('')
+      return
+    }
+
+    if (!selected.type.startsWith('image/')) {
+      setError('Only image files are allowed.')
+      setFile(null)
       return
     }
 
     setFile(selected)
-    setPreviewUrl(URL.createObjectURL(selected))
   }
 
   const onAnalyze = async () => {
@@ -70,7 +73,21 @@ function App() {
 
       <section className="panel">
         <h2>Preview</h2>
-        {previewUrl ? <img src={previewUrl} alt="Crop preview" className="preview" /> : <div className="empty">No image selected</div>}
+        {hasFile ? (
+          <div className="result">
+            <p>
+              <strong>File:</strong> {file.name}
+            </p>
+            <p>
+              <strong>Type:</strong> {file.type}
+            </p>
+            <p>
+              <strong>Size:</strong> {(file.size / 1024).toFixed(1)} KB
+            </p>
+          </div>
+        ) : (
+          <div className="empty">No image selected</div>
+        )}
       </section>
 
       <section className="panel">
