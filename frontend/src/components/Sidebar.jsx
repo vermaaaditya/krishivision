@@ -13,10 +13,10 @@ const Sidebar = () => {
     <aside className="sidebar" aria-label="Primary navigation">
       <div className="sidebar-brand">KrishiVision</div>
       <nav className="sidebar-nav">
-        <a className={`sidebar-link${activeHash === '#analysis' ? ' active' : ''}`} href="#analysis" aria-current={activeHash === '#analysis' ? 'page' : undefined}>
+        <a className={`sidebar-link${activeHash === '#analysis' ? ' active' : ''}`} href="#analysis" aria-current={activeHash === '#analysis' ? 'location' : undefined}>
           Analysis
         </a>
-        <a className={`sidebar-link${activeHash === '#results' ? ' active' : ''}`} href="#results" aria-current={activeHash === '#results' ? 'page' : undefined}>
+        <a className={`sidebar-link${activeHash === '#results' ? ' active' : ''}`} href="#results" aria-current={activeHash === '#results' ? 'location' : undefined}>
           Results
         </a>
       </nav>
