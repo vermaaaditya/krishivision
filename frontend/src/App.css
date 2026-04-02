@@ -1,9 +1,57 @@
 .app-shell {
   max-width: 960px;
-  margin: 0 auto;
+  margin: 0;
   padding: 2rem 1rem;
   display: grid;
   gap: 1rem;
+  width: 100%;
+}
+
+.main-layout {
+  min-height: 100vh;
+  display: flex;
+  background: #f5f8f4;
+}
+
+.sidebar {
+  width: 220px;
+  background: #204126;
+  color: #fff;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sidebar-brand {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-link {
+  color: #d6e3d7;
+  text-decoration: none;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+  background: #315f3b;
+  color: #fff;
+}
+
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
 }
 
 .panel {
