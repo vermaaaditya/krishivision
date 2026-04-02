@@ -1,12 +1,22 @@
+import { useEffect, useState } from 'react'
+
 const Sidebar = () => {
+  const [activeHash, setActiveHash] = useState(() => window.location.hash || '#analysis')
+
+  useEffect(() => {
+    const onHashChange = () => setActiveHash(window.location.hash || '#analysis')
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
   return (
-    <aside className="sidebar" aria-label="Primary">
+    <aside className="sidebar" aria-label="Primary navigation">
       <div className="sidebar-brand">KrishiVision</div>
       <nav className="sidebar-nav">
-        <a className="sidebar-link active" href="#analysis" aria-current="page">
+        <a className={`sidebar-link${activeHash === '#analysis' ? ' active' : ''}`} href="#analysis" aria-current={activeHash === '#analysis' ? 'page' : undefined}>
           Analysis
         </a>
-        <a className="sidebar-link" href="#results">
+        <a className={`sidebar-link${activeHash === '#results' ? ' active' : ''}`} href="#results" aria-current={activeHash === '#results' ? 'page' : undefined}>
           Results
         </a>
       </nav>
