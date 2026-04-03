@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 
 const navItems = [
   { to: '/dashboard', icon: 'dashboard', label: 'Dashboard', exact: true },
@@ -11,14 +11,14 @@ const navItems = [
 const Sidebar = () => {
   return (
     <aside className="h-screen w-64 hidden md:flex flex-col bg-stone-100 p-4 gap-2 fixed left-0 top-0 overflow-y-auto z-40">
-      <div className="mb-8 px-2">
+      <Link to="/" className="mb-8 px-2 block no-underline">
         <h2 className="text-lg font-black text-emerald-900 uppercase tracking-wider" style={{ fontFamily: 'Manrope, sans-serif' }}>
           KrishiVision
         </h2>
         <p className="text-stone-500 font-bold uppercase mt-1" style={{ fontSize: '10px', letterSpacing: '0.2em' }}>
           Field Intelligence
         </p>
-      </div>
+      </Link>
 
       <nav className="flex flex-col gap-1 flex-1">
         {navItems.map(({ to, icon, label, exact }) => (
