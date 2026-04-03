@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard'
 import ScanUpload from './pages/ScanUpload'
 import History from './pages/History'
 import Results from './pages/Results'
+import Insights from './pages/Insights'
+import Settings from './pages/Settings'
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
               <Route path="scan" element={<ScanUpload />} />
               <Route path="history" element={<History />} />
               <Route path="results" element={<Results />} />
+              <Route path="insights" element={<Insights />} />
+              <Route path="settings" element={<Settings />} />
               <Route path="*" element={<Dashboard />} />
             </Routes>
           </Layout>
