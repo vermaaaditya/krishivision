@@ -55,7 +55,7 @@ def predict(*, image_bytes: bytes, filename: str) -> Dict[str, object]:
         "fertilizer_type": ["Organic", "Chemical", "Mixed"],
     }
 
-    seed = hashlib.sha256(image_bytes + filename.encode("utf-8")).digest()
+    seed = hashlib.sha256(image_bytes + b"|" + filename.encode("utf-8")).digest()
 
     def pick(name: str, idx: int) -> str:
         vals = categories[name]

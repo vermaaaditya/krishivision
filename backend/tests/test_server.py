@@ -73,3 +73,19 @@ def test_predict_tabular_success() -> None:
     assert "disease" in payload
     assert "confidence" in payload
     assert "recommendation" in payload
+
+
+def test_predict_tabular_rejects_missing_features() -> None:
+    app = create_app()
+    client = app.test_client()
+
+    response = client.post(
+        "/api/predict_tabular",
+        json={
+            "region": "North India",
+            "crop_type": "Wheat",
+        },
+    )
+
+    assert response.status_code == 400
+    assert "Missing required features" in response.get_json()["error"]
