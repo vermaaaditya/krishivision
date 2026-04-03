@@ -36,7 +36,7 @@ function computeInsights(predictions) {
   predictions.forEach((p) => {
     if (!p.created_at) return
     const d = new Date(p.created_at)
-    const key = d.toLocaleString('en-GB', { month: 'short' })
+    const key = d.toLocaleString('default', { month: 'short' })
     if (!monthMap[key]) monthMap[key] = { month: key, healthy: 0, diseased: 0, ts: d }
     const isDisease = p.disease && p.disease.toLowerCase() !== 'healthy'
     if (isDisease) monthMap[key].diseased += 1

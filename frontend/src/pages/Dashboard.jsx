@@ -22,7 +22,7 @@ function predictionToScan(p) {
     id: p.id,
     title: p.filename || 'Crop Sample',
     location: p.created_at
-      ? new Date(p.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+      ? new Date(p.created_at).toLocaleString('default', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
       : '—',
     status,
     statusLabel,
@@ -130,7 +130,7 @@ export default function Dashboard() {
                       <span className="material-symbols-outlined text-outline-variant text-3xl">image</span>
                     </div>
                   )}
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 overflow-hidden">
                     <h4 className="font-bold text-lg text-on-surface truncate" style={{ fontFamily: 'Manrope, sans-serif' }}>
                       {scan.title}
                     </h4>

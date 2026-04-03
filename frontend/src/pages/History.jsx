@@ -9,7 +9,7 @@ function predictionToScan(p) {
     status = p.confidence >= 0.75 ? 'critical' : 'warning'
   }
   const date = p.created_at
-    ? new Date(p.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+    ? new Date(p.created_at).toLocaleString('default', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
     : '—'
   return {
     id: p.id,
