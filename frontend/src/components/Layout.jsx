@@ -5,6 +5,7 @@ const mobileNavItems = [
   { to: '/dashboard', icon: 'home', label: 'Home', exact: true },
   { to: '/scan', icon: 'photo_camera', label: 'Scan' },
   { to: '/history', icon: 'cloud_done', label: 'History' },
+  { to: '/insights', icon: 'insights', label: 'Insights' },
   { to: '/settings', icon: 'person', label: 'Profile' },
 ]
 

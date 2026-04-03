@@ -44,10 +44,10 @@ export default function LandingPage() {
           </div>
 
           <nav className="hidden md:flex items-center gap-8 text-sm text-on-surface-variant">
-            <a className="text-emerald-900 font-semibold" href="#">Home</a>
-            <a className="hover:text-on-surface transition-colors" href="#">Solutions</a>
-            <a className="hover:text-on-surface transition-colors" href="#">Community</a>
-            <a className="hover:text-on-surface transition-colors" href="#">Pricing</a>
+            <a className="text-emerald-900 font-semibold" href="#hero">Home</a>
+            <a className="hover:text-on-surface transition-colors" href="#features">Solutions</a>
+            <a className="hover:text-on-surface transition-colors" href="#cta">Community</a>
+            <a className="hover:text-on-surface transition-colors" href="#cta">Pricing</a>
           </nav>
 
           <Link
@@ -63,7 +63,7 @@ export default function LandingPage() {
       <main className="flex-1">
 
         {/* ── Hero ── */}
-        <section className="bg-surface-container-low">
+        <section className="bg-surface-container-low" id="hero">
           <div className="max-w-[1200px] mx-auto px-4 md:px-8 py-12 md:py-16 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <span className="inline-flex bg-primary-fixed text-on-primary-fixed text-[11px] font-semibold tracking-[0.14em] uppercase px-4 py-1 rounded-full">
@@ -123,7 +123,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── Features ── */}
-        <section className="bg-background py-16 md:py-20 border-t border-outline-variant/70">
+        <section className="bg-background py-16 md:py-20 border-t border-outline-variant/70" id="features">
           <div className="max-w-[1200px] mx-auto px-4 md:px-8">
             <div className="text-center max-w-2xl mx-auto">
               <h2 className="font-extrabold text-[40px] md:text-[50px] tracking-[-0.02em] text-on-surface" style={{ fontFamily: 'Manrope, sans-serif' }}>
@@ -149,7 +149,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── CTA ── */}
-        <section className="bg-background py-8 md:py-10">
+        <section className="bg-background py-8 md:py-10" id="cta">
           <div className="max-w-[1200px] mx-auto px-4 md:px-8">
             <div className="bg-primary rounded-[34px] p-8 md:p-12 flex flex-col lg:flex-row items-center gap-8">
               <div className="flex-1">
