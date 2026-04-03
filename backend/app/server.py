@@ -2,6 +2,8 @@ from __future__ import annotations
 import os
 import uuid
 import logging
+import importlib.util
+from pathlib import Path
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -11,6 +13,18 @@ from .model_service import ModelService
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
 logger = logging.getLogger(__name__)
+MODULE_PATH = Path(__file__).resolve().parents[2] / "ml-model" / "classifier.py"
+
+
+def _load_tabular_predictor():
+    spec = importlib.util.spec_from_file_location("crop_classifier", MODULE_PATH)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Unable to load classifier module at {MODULE_PATH}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, "predict_tabular"):
+        raise RuntimeError("Classifier module must expose a 'predict_tabular' function")
+    return module.predict_tabular
 
 
 def create_app() -> Flask:
@@ -18,6 +32,7 @@ def create_app() -> Flask:
     CORS(app, origins=os.getenv("CORS_ORIGINS", "http://localhost:5173"))
 
     model_service = ModelService()
+    tabular_predict = _load_tabular_predictor()
     firebase_service = FirebaseService()
 
     @app.get("/api/health")
@@ -26,6 +41,18 @@ def create_app() -> Flask:
             "status": "ok",
             "firebase": firebase_service.enabled,
         }), 200
+
+    @app.post("/api/predict_tabular")
+    def predict_tabular():
+        payload = request.get_json(silent=True)
+        if not isinstance(payload, dict) or not payload:
+            return jsonify({"error": "JSON body with tabular features is required"}), 400
+        try:
+            prediction = tabular_predict(payload)
+        except Exception as e:
+            logger.exception("Tabular model prediction failed")
+            return jsonify({"error": str(e)}), 500
+        return jsonify(prediction), 200
 
     @app.post("/api/predict")
     def predict():
