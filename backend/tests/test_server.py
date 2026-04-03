@@ -46,6 +46,23 @@ def test_predict_rejects_invalid_extension() -> None:
     assert "Unsupported file type" in response.get_json()["error"]
 
 
+def test_predict_accepts_heic_extension() -> None:
+    app = create_app()
+    client = app.test_client()
+
+    response = client.post(
+        "/api/predict",
+        data={"image": (BytesIO(b"sample-image"), "leaf.heic")},
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert "disease" in payload
+    assert "confidence" in payload
+    assert "recommendation" in payload
+
+
 def test_predict_tabular_success() -> None:
     app = create_app()
     client = app.test_client()

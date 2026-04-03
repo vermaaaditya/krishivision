@@ -11,7 +11,7 @@ from werkzeug.utils import secure_filename
 from .firebase_service import FirebaseService
 from .model_service import ModelService
 
-ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg"}
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "heic", "heif"}
 logger = logging.getLogger(__name__)
 MODULE_PATH = Path(__file__).resolve().parents[2] / "ml-model" / "classifier.py"
 _TABULAR_PREDICTOR = None
@@ -88,7 +88,7 @@ def create_app() -> Flask:
 
         ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
         if ext not in ALLOWED_EXTENSIONS:
-            return jsonify({"error": "Unsupported file type. Use PNG or JPG."}), 400
+            return jsonify({"error": "Unsupported file type. Use PNG, JPG, or HEIC."}), 400
 
         image_bytes = file.read()
         if not image_bytes:
