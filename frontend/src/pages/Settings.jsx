@@ -3,22 +3,49 @@ import { useState } from 'react'
 const cropOptions = ['Wheat', 'Rice', 'Soybean', 'Corn', 'Cotton', 'Sugarcane', 'Tomato', 'Other']
 const regionOptions = ['North India', 'South India', 'East India', 'West India', 'Central India', 'Other']
 
+const STORAGE_KEY = 'krishivision_settings'
+
+function loadSettings() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+function saveSettings(profile, notifications) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ profile, notifications }))
+  } catch {
+    // Storage unavailable — silently ignore
+  }
+}
+
+const defaults = loadSettings()
+
 export default function Settings() {
-  const [notifications, setNotifications] = useState({
+  const [notifications, setNotifications] = useState(defaults?.notifications ?? {
     emailAlerts: true,
     diseaseAlerts: true,
     weeklyReport: false,
     weatherAdvisories: true,
   })
 
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState(defaults?.profile ?? {
     name: 'Farmer',
     email: 'farmer@krishivision.app',
     region: 'North India',
     cropType: 'Wheat',
   })
 
-  const toggle = (key) => setNotifications((prev) => ({ ...prev, [key]: !prev[key] }))
+  const [saved, setSaved] = useState(false)
+
+  const toggle = (key) => {
+    const updated = { ...notifications, [key]: !notifications[key] }
+    setNotifications(updated)
+    saveSettings(profile, updated)
+  }
 
   return (
     <div className="p-6 md:p-12 pb-32 md:pb-12 bg-surface min-h-screen">
@@ -92,10 +119,16 @@ export default function Settings() {
               </div>
             </div>
             <button
-              className="mt-6 bg-primary text-on-primary font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition"
+              onClick={() => {
+                saveSettings(profile, notifications)
+                setSaved(true)
+                setTimeout(() => setSaved(false), 2000)
+              }}
+              className="mt-6 bg-primary text-on-primary font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition flex items-center gap-2"
               style={{ fontFamily: 'Manrope, sans-serif' }}
             >
-              Save Profile
+              {saved && <span className="material-symbols-outlined text-[18px]">check</span>}
+              {saved ? 'Saved!' : 'Save Profile'}
             </button>
           </section>
 
